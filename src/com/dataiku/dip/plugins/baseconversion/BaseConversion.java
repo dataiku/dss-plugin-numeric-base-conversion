@@ -179,7 +179,7 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
                 matcher = DECI_RE.matcher(toConvert);
                 if (matcher.matches()) {
                     String output;
-                    output = Long.toHexString(Long.parseLong(matcher.group(1)));
+                    output = Long.toBinaryString(Long.parseLong(matcher.group(1)));
                     row.put(outputColumn, output.toUpperCase());
                 }
                 break;
