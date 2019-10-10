@@ -23,6 +23,11 @@ import java.math.BigInteger;
 
 
 public class BaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
+
+    private static Pattern HEXADECIMAL_RE = Pattern.compile("(0x)?([0-9a-fA-F]+)h?");
+    private static Pattern BINARY_RE = Pattern.compile("([0-1]+)b?");
+    private static Pattern DECIMAL_RE = Pattern.compile("^([0-9]+)$");
+
     public static class Parameter implements StepParams {
         private static final long serialVersionUID=-1;
         public String inputColumn;
@@ -35,142 +40,96 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
     }
 
     public enum ProcessingMode implements Labelled {
-        BINTODECIMAL {
+        BINARYTODECIMAL {
             @Override
             public String getLabel() {
                 return "Binary to Decimal";
             }
         },
-        HEXATODECIMAL {
+        HEXADECIMALTODECIMAL {
             @Override
             public String getLabel() {
                 return "Hexadecimal to Decimal";
             }
         },
-        DECIMALTOBIN {
+        DECIMALTOBINARY {
             @Override
             public String getLabel() {
                 return "Decimal to Binary";
             }
         },
-        DECIMALTOHEXA {
+        DECIMALTOHEXADECIMAL {
             @Override
             public String getLabel() {
                 return "Decimal to Hexadecimal";
             }
         },
-        HEXATOBIN {
+        HEXADECIMALTOBINARY {
             @Override
             public String getLabel() {
                 return "Hexadecimal to Binary";
             }
         },
-        BINTOHEXA {
+        BINARYTOHEXADECIMAL {
             @Override
             public String getLabel() {
                 return "Binary to Hexadecimal";
             }
         }
     };
-    public enum ConverterSelection implements Converter {
-        BINTODECIMAL {
-            @Override
-            public String getConverted(String toConvert) {
-                return binToDecimal(toConvert);
-            }
-        },
-        HEXATODECIMAL {
-            @Override
-            public String getConverted(String toConvert) {
-                return hexaToDecimal(toConvert);
-            }
-        },
-        DECIMALTOBIN {
-            @Override
-            public String getConverted(String toConvert) {
-                return decimalToBin(toConvert);
-            }
-        },
-        DECIMALTOHEXA {
-            @Override
-            public String getConverted(String toConvert) {
-                return decimalToHexa(toConvert);
-            }
-        },
-        HEXATOBIN {
-            @Override
-            public String getConverted(String toConvert) {
-                return hexaToBin(toConvert);
-            }
-        },
-        BINTOHEXA {
-            @Override
-            public String getConverted(String toConvert) {
-                return binToHexa(toConvert);
-            }
-        }
-    }
 
-    ConverterSelection selectedConverter;
-
-    public static String binToDecimal(String toConvert){
-        String output = "";
-        Matcher matcher = BIN_RE.matcher(toConvert);
+    static String binaryToDecimal(String toConvert) {
+        Matcher matcher = BINARY_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(1), 2);
-            output = input.toString(10);
+            return input.toString(10);
         }
-        return output;
+        return "";
     }
 
-    public static String hexaToDecimal(String toConvert){
-        String output = "";
-        Matcher matcher = HEXA_RE.matcher(toConvert);
+    static String hexadecimalToDecimal(String toConvert) {
+        Matcher matcher = HEXADECIMAL_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(2), 16);
-            output = input.toString(10);
+            return input.toString(10);
         }
-        return output;
+        return "";
     }
 
-    public static String decimalToBin(String toConvert){
-        String output = "";
-        Matcher matcher = DECI_RE.matcher(toConvert);
+    static String decimalToBinary(String toConvert) {
+        Matcher matcher = DECIMAL_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(1), 10);
-            output = input.toString(2);
+            return input.toString(2);
         }
-        return output;
+        return "";
     }
 
-    public static String decimalToHexa(String toConvert){
-        String output = "";
-        Matcher matcher = DECI_RE.matcher(toConvert);
+    static String decimalToHexadecimal(String toConvert) {
+        Matcher matcher = DECIMAL_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(1), 10);
-            output = input.toString(16).toUpperCase();
+            return input.toString(16).toUpperCase();
         }
-        return output;
+        return "";
     }
 
-    public static String hexaToBin(String toConvert){
-        String output = "";
-        Matcher matcher = HEXA_RE.matcher(toConvert);
+    static String hexadecimalToBinary(String toConvert) {
+        Matcher matcher = HEXADECIMAL_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(2), 16);
-            output = input.toString(2);
+            return input.toString(2);
         }
-        return output;
+        return "";
     }
 
-    public static String binToHexa(String toConvert){
-        String output = "";
-        Matcher matcher = BIN_RE.matcher(toConvert);
+    static String binaryToHexadecimal(String toConvert) {
+        Matcher matcher = BINARY_RE.matcher(toConvert);
         if (matcher.matches()) {
             BigInteger input = new BigInteger(matcher.group(1), 2);
-            output = input.toString(16).toUpperCase();
+            return input.toString(16).toUpperCase();
         }
-        return output;
+        return "";
     }
 
     public static final ProcessorMeta<BaseConversion, Parameter> META = new ProcessorMeta<BaseConversion, Parameter>() {
@@ -181,7 +140,7 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         }
 
         @Override
-        public String getDocPage(){
+        public String getDocPage() {
             return "base-conversion";
         }
 
@@ -212,7 +171,7 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         public ProcessorDesc describe() {
             return ProcessorDesc.withGenericForm(this.getName(), actionVerb("Convert") + " binary hexa to from decimal")
                     .withMNEColParam("inputColumn", "Input column")
-                    .withParam(ParamDesc.advancedSelect("processingMode","Conversion", "", ProcessingMode.class).withDefaultValue(ProcessingMode.BINTODECIMAL))
+                    .withParam(ParamDesc.advancedSelect("processingMode","Conversion", "", ProcessingMode.class).withDefaultValue(ProcessingMode.BINARYTODECIMAL))
                     .withMNESParam("outputColumn", "Output column");
         }
 
@@ -222,56 +181,29 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         }
     };
 
-    Parameter params;
     public BaseConversion(Parameter params) {
         this.params = params;
     }
 
-    private Column outputColumn, cd;
-
-    private static Pattern HEXA_RE = Pattern.compile("(0x)?([0-9a-fA-F]+)h?");
-    private static Pattern BIN_RE = Pattern.compile("([0-1]+)b?");
-    private static Pattern DECI_RE = Pattern.compile("^([0-9]+)(\\.|,)?[0-9]*$");
+    private ConverterSelection selectedConverter;
+    private Parameter params;
+    private Column outputColumn;
+    private Column cd;
 
     @Override
     public void processRow(Row row) throws Exception {
         String toConvert = row.get(cd);
-        if(toConvert == null || toConvert.equals("")){
+        if (toConvert == null || toConvert.equals("")) {
             getProcessorOutput().emitRow(row);
             return;
         }
 
-        String output;
-        output = selectedConverter.getConverted(toConvert);
-        if (output != "") {
+        String output = selectedConverter.getConverted(toConvert);
+        if (output.length() != 0) {
             row.put(outputColumn, output);
         }
 
         getProcessorOutput().emitRow(row);
-        return;
-    }
-
-    private void setConverter() {
-        switch(params.processingMode) {
-            case HEXATODECIMAL:
-                selectedConverter = ConverterSelection.HEXATODECIMAL;
-                break;
-            case BINTODECIMAL:
-                selectedConverter = ConverterSelection.BINTODECIMAL;
-                break;
-            case DECIMALTOHEXA:
-                selectedConverter = ConverterSelection.DECIMALTOHEXA;
-                break;
-            case DECIMALTOBIN:
-                selectedConverter = ConverterSelection.DECIMALTOBIN;
-                break;
-            case HEXATOBIN:
-                selectedConverter = ConverterSelection.HEXATOBIN;
-                break;
-            case BINTOHEXA:
-                selectedConverter = ConverterSelection.BINTOHEXA;
-                break;
-        }
     }
 
     @Override
@@ -283,10 +215,67 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
     public void init() throws Exception {
         cd = getCf().column(params.inputColumn, ProcessorRole.INPUT_COLUMN);
         outputColumn = getCf().column(params.outputColumn, ProcessorRole.OUTPUT_COLUMN);
-        setConverter();
+        selectedConverter = chooseConverter(params.processingMode);
     }
 
-}
-abstract interface Converter {
-    public String getConverted(String toConvert);
+    private ConverterSelection chooseConverter(ProcessingMode processingMode) {
+        switch(processingMode) {
+            case HEXADECIMALTODECIMAL:
+                return ConverterSelection.HEXADECIMALTODECIMAL;
+            case BINARYTODECIMAL:
+                return ConverterSelection.BINARYTODECIMAL;
+            case DECIMALTOHEXADECIMAL:
+                return ConverterSelection.DECIMALTOHEXADECIMAL;
+            case DECIMALTOBINARY:
+                return ConverterSelection.DECIMALTOBINARY;
+            case HEXADECIMALTOBINARY:
+                return ConverterSelection.HEXADECIMALTOBINARY;
+            case BINARYTOHEXADECIMAL:
+                return ConverterSelection.BINARYTOHEXADECIMAL;
+            default:
+                throw new IllegalArgumentException("Invalid processing mode: " + processingMode);
+        }
+    }
+
+    enum ConverterSelection implements Converter {
+        BINARYTODECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return binaryToDecimal(toConvert);
+            }
+        },
+        HEXADECIMALTODECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return hexadecimalToDecimal(toConvert);
+            }
+        },
+        DECIMALTOBINARY {
+            @Override
+            public String getConverted(String toConvert) {
+                return decimalToBinary(toConvert);
+            }
+        },
+        DECIMALTOHEXADECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return decimalToHexadecimal(toConvert);
+            }
+        },
+        HEXADECIMALTOBINARY {
+            @Override
+            public String getConverted(String toConvert) {
+                return hexadecimalToBinary(toConvert);
+            }
+        },
+        BINARYTOHEXADECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return binaryToHexadecimal(toConvert);
+            }
+        }
+    }
+    interface Converter {
+        String getConverted(String toConvert);
+    }
 }
