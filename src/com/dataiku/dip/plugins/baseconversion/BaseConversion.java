@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.math.BigInteger;
+
 
 public class BaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
     public static class Parameter implements StepParams {
@@ -70,6 +72,106 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
             }
         }
     };
+    public enum ConverterSelection implements Converter {
+        BINTODECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return binToDecimal(toConvert);
+            }
+        },
+        HEXATODECIMAL {
+            @Override
+            public String getConverted(String toConvert) {
+                return hexaToDecimal(toConvert);
+            }
+        },
+        DECIMALTOBIN {
+            @Override
+            public String getConverted(String toConvert) {
+                return decimalToBin(toConvert);
+            }
+        },
+        DECIMALTOHEXA {
+            @Override
+            public String getConverted(String toConvert) {
+                return decimalToHexa(toConvert);
+            }
+        },
+        HEXATOBIN {
+            @Override
+            public String getConverted(String toConvert) {
+                return hexaToBin(toConvert);
+            }
+        },
+        BINTOHEXA {
+            @Override
+            public String getConverted(String toConvert) {
+                return binToHexa(toConvert);
+            }
+        }
+    }
+
+    ConverterSelection selectedConverter;
+
+    public static String binToDecimal(String toConvert){
+        String output = "";
+        Matcher matcher = BIN_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(1), 2);
+            output = input.toString(10);
+        }
+        return output;
+    }
+
+    public static String hexaToDecimal(String toConvert){
+        String output = "";
+        Matcher matcher = HEXA_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(2), 16);
+            output = input.toString(10);
+        }
+        return output;
+    }
+
+    public static String decimalToBin(String toConvert){
+        String output = "";
+        Matcher matcher = DECI_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(1), 10);
+            output = input.toString(2);
+        }
+        return output;
+    }
+
+    public static String decimalToHexa(String toConvert){
+        String output = "";
+        Matcher matcher = DECI_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(1), 10);
+            output = input.toString(16).toUpperCase();
+        }
+        return output;
+    }
+
+    public static String hexaToBin(String toConvert){
+        String output = "";
+        Matcher matcher = HEXA_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(2), 16);
+            output = input.toString(2);
+        }
+        return output;
+    }
+
+    public static String binToHexa(String toConvert){
+        String output = "";
+        Matcher matcher = BIN_RE.matcher(toConvert);
+        if (matcher.matches()) {
+            BigInteger input = new BigInteger(matcher.group(1), 2);
+            output = input.toString(16).toUpperCase();
+        }
+        return output;
+    }
 
     public static final ProcessorMeta<BaseConversion, Parameter> META = new ProcessorMeta<BaseConversion, Parameter>() {
 
@@ -127,10 +229,9 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
 
     private Column outputColumn, cd;
 
-    private Pattern HEXA_RE = Pattern.compile("(0x)?([0-9a-fA-F]+)h?");
-    private Pattern BIN_RE = Pattern.compile("([0-1]+)b?");
-    //private Pattern DECI_RE = Pattern.compile("^([0-9]+).?");
-    private Pattern DECI_RE = Pattern.compile("^([0-9]+)(.|,)?[0-9]+$");
+    private static Pattern HEXA_RE = Pattern.compile("(0x)?([0-9a-fA-F]+)h?");
+    private static Pattern BIN_RE = Pattern.compile("([0-1]+)b?");
+    private static Pattern DECI_RE = Pattern.compile("^([0-9]+)(\\.|,)?[0-9]*$");
 
     @Override
     public void processRow(Row row) throws Exception {
@@ -140,64 +241,35 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
             return;
         }
 
-        baseConversion(row, toConvert);
+        String output;
+        output = selectedConverter.getConverted(toConvert);
+        if (output != "") {
+            row.put(outputColumn, output);
+        }
 
         getProcessorOutput().emitRow(row);
         return;
     }
 
-    private void baseConversion(Row row, String toConvert) {
-        // 0x3D 3Dh 3D
-        // 11011b 11011
-        Matcher matcher;
-        switch (params.processingMode) {
+    private void setConverter() {
+        switch(params.processingMode) {
             case HEXATODECIMAL:
-                matcher = HEXA_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    Long output;
-                    output = Long.parseLong(matcher.group(2), 16);
-                    row.put(outputColumn, output);
-                }
+                selectedConverter = ConverterSelection.HEXATODECIMAL;
                 break;
             case BINTODECIMAL:
-                matcher = BIN_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    Long output;
-                    output = Long.parseLong(matcher.group(1), 2);
-                    row.put(outputColumn, output);
-                }
+                selectedConverter = ConverterSelection.BINTODECIMAL;
                 break;
             case DECIMALTOHEXA:
-                matcher = DECI_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    String output;
-                    output = Long.toHexString(Long.parseLong(matcher.group(1)));
-                    row.put(outputColumn, output.toUpperCase());
-                }
+                selectedConverter = ConverterSelection.DECIMALTOHEXA;
                 break;
             case DECIMALTOBIN:
-                matcher = DECI_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    String output;
-                    output = Long.toBinaryString(Long.parseLong(matcher.group(1)));
-                    row.put(outputColumn, output.toUpperCase());
-                }
+                selectedConverter = ConverterSelection.DECIMALTOBIN;
                 break;
             case HEXATOBIN:
-                matcher = HEXA_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    String output;
-                    output = Long.toBinaryString(Long.parseLong(matcher.group(2), 16));
-                    row.put(outputColumn, output);
-                }
+                selectedConverter = ConverterSelection.HEXATOBIN;
                 break;
             case BINTOHEXA:
-                matcher = BIN_RE.matcher(toConvert);
-                if (matcher.matches()) {
-                    String output;
-                    output = Long.toHexString(Long.parseLong(matcher.group(1), 2));
-                    row.put(outputColumn, output.toUpperCase());
-                }
+                selectedConverter = ConverterSelection.BINTOHEXA;
                 break;
         }
     }
@@ -211,6 +283,10 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
     public void init() throws Exception {
         cd = getCf().column(params.inputColumn, ProcessorRole.INPUT_COLUMN);
         outputColumn = getCf().column(params.outputColumn, ProcessorRole.OUTPUT_COLUMN);
+        setConverter();
     }
 
+}
+abstract interface Converter {
+    public String getConverted(String toConvert);
 }
