@@ -198,7 +198,7 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
             return;
         }
 
-        String output = selectedConverter.getConverted(toConvert);
+        String output = selectedConverter.convert(toConvert);
         if (output.length() != 0) {
             row.put(outputColumn, output);
         }
@@ -240,42 +240,42 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
     enum ConverterSelection implements Converter {
         BINARYTODECIMAL {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return binaryToDecimal(toConvert);
             }
         },
         HEXADECIMALTODECIMAL {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return hexadecimalToDecimal(toConvert);
             }
         },
         DECIMALTOBINARY {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return decimalToBinary(toConvert);
             }
         },
         DECIMALTOHEXADECIMAL {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return decimalToHexadecimal(toConvert);
             }
         },
         HEXADECIMALTOBINARY {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return hexadecimalToBinary(toConvert);
             }
         },
         BINARYTOHEXADECIMAL {
             @Override
-            public String getConverted(String toConvert) {
+            public String convert(String toConvert) {
                 return binaryToHexadecimal(toConvert);
             }
         }
     }
     interface Converter {
-        String getConverted(String toConvert);
+        String convert(String toConvert);
     }
 }
