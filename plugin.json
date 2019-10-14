@@ -3,14 +3,12 @@
     "version": "1.0.0",
     "meta": {
         "label": "Base conversion",
-        "description": "This plugin provides a preparation processor for converting numbers from / to binary / hexadecimal.",
+        "description": "Convert numbers from/to binary and hexadecimal formats.",
         "author": "Dataiku (Alex Bourret)",
         "icon": "icon-superscript",
         "licenseInfo": "Apache Software License",
         "url": "https://www.dataiku.com/dss/plugins/info/base-conversion.html",
-        "tags": [
-            "math"
-        ]
+        "tags": ["Data Preparation"]
     },
     "javaPreparationProcessors": [
         {
