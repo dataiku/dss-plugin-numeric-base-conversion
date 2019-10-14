@@ -99,8 +99,15 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         public String getHelp() {
             return "This processor performs base conversion." +
                     "\n \n" +
-                    "# Output \n" +
-                    "* <i>prefix</i>convert : Contains converted numbers";
+                    "# Input column\n" +
+                    "Contains the numbers to be converted\n \n" +
+                    "# Conversion\n" +
+                    "Select the conversion mode to / from:\n" +
+                    "* Decimal\n" +
+                    "* Binary\n" +
+                    "* Hexadecimal\n \n" +
+                    "# Output column\n" +
+                    "Contains converted numbers";
         }
 
         @Override
