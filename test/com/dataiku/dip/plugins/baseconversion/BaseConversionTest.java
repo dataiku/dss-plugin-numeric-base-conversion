@@ -1,100 +1,165 @@
 package com.dataiku.dip.plugins.baseconversion;
 
-import java.util.regex.Matcher;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import com.dataiku.dip.plugins.baseconversion.BaseConversion.ProcessingMode;
 
 
 public class BaseConversionTest {
     @Test
     public void testHexadecimalToDecimal() {
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal(""),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("qwerty"),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("1"),"1");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("A"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("a"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("0xa"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("0Xa"),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("0xA"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("Ah"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("AH"),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("ah"),"10");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("aH"),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("11b"),"283");
+        assertEquals(hexaToDecimal(""), "");
+        assertEquals(hexaToDecimal("qwerty"), "");
+        assertEquals(hexaToDecimal("1"), "1");
+        assertEquals(hexaToDecimal("A"), "10");
+        assertEquals(hexaToDecimal("a"), "10");
+        assertEquals(hexaToDecimal("0xa"), "10");
+        assertEquals(hexaToDecimal("0Xa"), "10");
+        assertEquals(hexaToDecimal("0xA"), "10");
+        assertEquals(hexaToDecimal("Ah"), "10");
+        assertEquals(hexaToDecimal("AH"), "10");
+        assertEquals(hexaToDecimal("ah"), "10");
+        assertEquals(hexaToDecimal("aH"), "10");
+        assertEquals(hexaToDecimal("aJ"), "");
+        assertEquals(hexaToDecimal("11b"), "283");
         // 0x3D 3Dh 3D
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("0x3D"),"61");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("3Dh"),"61");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("3D"),"61");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("FFFFFFFFFFFFFFFF"),"18446744073709551615");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("FFFFFFFFFFFFFFFFh"),"18446744073709551615");
-        Assert.assertEquals(BaseConversion.hexadecimalToDecimal("0xFFFFFFFFFFFFFFFF"),"18446744073709551615");
+        assertEquals(hexaToDecimal("0x3D"), "61");
+        assertEquals(hexaToDecimal("0X3D"), "61");
+        assertEquals(hexaToDecimal("3Dh"), "61");
+        assertEquals(hexaToDecimal("3DH"), "61");
+        assertEquals(hexaToDecimal("3D"), "61");
+        assertEquals(hexaToDecimal("FFFFFFFFFFFFFFFF"), "18446744073709551615");
+        assertEquals(hexaToDecimal("FFFFFFFFFFFFFFFFh"), "18446744073709551615");
+        assertEquals(hexaToDecimal("0xFFFFFFFFFFFFFFFF"), "18446744073709551615");
+        assertEquals(hexaToDecimal("0XFF"), "255");
     }
 
     @Test
     public void testBinaryToDecimal() {
-        Assert.assertEquals(BaseConversion.binaryToDecimal(""),"");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("qwerty"),"");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("1"),"1");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11"),"3");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11b"),"3");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11B"),"");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11h"),"");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("111111111111111111111111111111111111111111111111111111111111111"),"9223372036854775807");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("1111111111111111111111111111111111111111111111111111111111111111"),"18446744073709551615");
+        assertEquals(binaryToDecimal(""), "");
+        assertEquals(binaryToDecimal("qwerty"), "");
+        assertEquals(binaryToDecimal("1"), "1");
+        assertEquals(binaryToDecimal("11"), "3");
+        assertEquals(binaryToDecimal("11b"), "3");
+        assertEquals(binaryToDecimal("11B"), "3");
+        assertEquals(binaryToDecimal("11h"), "");
+        assertEquals(binaryToDecimal("11H"), "");
+        assertEquals(binaryToDecimal("111111111111111111111111111111111111111111111111111111111111111"), "9223372036854775807");
+        assertEquals(binaryToDecimal("1111111111111111111111111111111111111111111111111111111111111111"), "18446744073709551615");
         // 11011b 11011
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11011b"),"27");
-        Assert.assertEquals(BaseConversion.binaryToDecimal("11011"),"27");
+        assertEquals(binaryToDecimal("11011b"), "27");
+        assertEquals(binaryToDecimal("11011"), "27");
     }
 
     @Test
     public void testBinaryToHexadecimal() {
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal(""),"");
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal("qwerty"),"");
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal("1"),"1");
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal("1010"),"A");
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal("1111111111111111111111111111111111111111111111111111111111111111"), "FFFFFFFFFFFFFFFF");
-        Assert.assertEquals(BaseConversion.binaryToHexadecimal("1111111111111111111111111111111111111111111111111111111111111111b"), "FFFFFFFFFFFFFFFF");
+        assertEquals(binaryToHexa(""), "");
+        assertEquals(binaryToHexa("qwerty"), "");
+        assertEquals(binaryToHexa("1"), "1");
+        assertEquals(binaryToHexa("1010"), "A");
+        assertEquals(binaryToHexa("1010b"), "A");
+        assertEquals(binaryToHexa("1111111111111111111111111111111111111111111111111111111111111111"), "FFFFFFFFFFFFFFFF");
+        assertEquals(binaryToHexa("1111111111111111111111111111111111111111111111111111111111111111b"), "FFFFFFFFFFFFFFFF");
     }
 
     @Test
     public void testHexadecimalToBinary() {
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary(""),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("qwerty"),"");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("1"),"1");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("a"),"1010");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("ah"),"1010");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("0xa"),"1010");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("FFFFFFFFFFFFFFFF"),"1111111111111111111111111111111111111111111111111111111111111111");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("FFFFFFFFFFFFFFFFh"),"1111111111111111111111111111111111111111111111111111111111111111");
-        Assert.assertEquals(BaseConversion.hexadecimalToBinary("0xFFFFFFFFFFFFFFFF"),"1111111111111111111111111111111111111111111111111111111111111111");
+        assertEquals(hexaToBinary(""), "");
+        assertEquals(hexaToBinary("qwerty"), "");
+        assertEquals(hexaToBinary("1"), "1");
+        assertEquals(hexaToBinary("a"), "1010");
+        assertEquals(hexaToBinary("ah"), "1010");
+        assertEquals(hexaToBinary("0xa"), "1010");
+        assertEquals(hexaToBinary("FFFFFFFFFFFFFFFF"), "1111111111111111111111111111111111111111111111111111111111111111");
+        assertEquals(hexaToBinary("FFFFFFFFFFFFFFFFh"), "1111111111111111111111111111111111111111111111111111111111111111");
+        assertEquals(hexaToBinary("0xFFFFFFFFFFFFFFFF"), "1111111111111111111111111111111111111111111111111111111111111111");
     }
 
     @Test
     public void testDecimalToHexadecimal() {
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal(""),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("qwerty"),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("1"),"1");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("-1"),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("10"),"A");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("10.1"),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("10,1"),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("10,"),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("10."),"");
-        Assert.assertEquals(BaseConversion.decimalToHexadecimal("18446744073709551615"),"FFFFFFFFFFFFFFFF");
+        assertEquals(decimalToHexa(""), "");
+        assertEquals(decimalToHexa("qwerty"), "");
+        assertEquals(decimalToHexa("1"), "1");
+        assertEquals(decimalToHexa("-1"), "");
+        assertEquals(decimalToHexa("10"), "A");
+        assertEquals(decimalToHexa("10.1"), "");
+        assertEquals(decimalToHexa("10,1"), "");
+        assertEquals(decimalToHexa("10,"), "");
+        assertEquals(decimalToHexa("10."), "");
+        assertEquals(decimalToHexa("18446744073709551615"), "FFFFFFFFFFFFFFFF");
     }
 
     @Test
     public void testDecimalTobinary() {
-        Assert.assertEquals(BaseConversion.decimalToBinary(""),"");
-        Assert.assertEquals(BaseConversion.decimalToBinary("qwerty"),"");
-        Assert.assertEquals(BaseConversion.decimalToBinary("1"),"1");
-        Assert.assertEquals(BaseConversion.decimalToBinary("-1"),"");
-        Assert.assertEquals(BaseConversion.decimalToBinary("3"),"11");
-        Assert.assertEquals(BaseConversion.decimalToBinary("1a"),"");
-        Assert.assertEquals(BaseConversion.decimalToBinary("9223372036854775807"),"111111111111111111111111111111111111111111111111111111111111111");
-        Assert.assertEquals(BaseConversion.decimalToBinary("18446744073709551615"),"1111111111111111111111111111111111111111111111111111111111111111");
-        Assert.assertEquals(BaseConversion.decimalToBinary("18446744073709551615.1"),"");
-        Assert.assertEquals(BaseConversion.decimalToBinary("18446744073709551615,1"),"");
+        assertEquals(decimalToBinary(""), "");
+        assertEquals(decimalToBinary("qwerty"), "");
+        assertEquals(decimalToBinary("1"), "1");
+        assertEquals(decimalToBinary("-1"), "");
+        assertEquals(decimalToBinary("3"), "11");
+        assertEquals(decimalToBinary("1a"), "");
+        assertEquals(decimalToBinary("9223372036854775807"), "111111111111111111111111111111111111111111111111111111111111111");
+        assertEquals(decimalToBinary("18446744073709551615"), "1111111111111111111111111111111111111111111111111111111111111111");
+        assertEquals(decimalToBinary("18446744073709551615.1"), "");
+        assertEquals(decimalToBinary("18446744073709551615,1"), "");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void decimalToBinaryShouldThrowExceptionWhenNull() {
+        decimalToBinary(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void decimalToHexaShouldThrowExceptionWhenNull() {
+        decimalToHexa(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void hexaToBinaryShouldThrowExceptionWhenNull() {
+        hexaToBinary(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void hexaToDecimalShouldThrowExceptionWhenNull() {
+        hexaToDecimal(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void binaryToHexaShouldThrowExceptionWhenNull() {
+        binaryToHexa(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void binaryToDecimalShouldThrowExceptionWhenNull() {
+        binaryToDecimal(null);
+    }
+
+    private static String decimalToBinary(String str) {
+        return convert(ProcessingMode.DECIMAL_TO_BINARY, str);
+    }
+
+    private static String binaryToDecimal(String str) {
+        return convert(ProcessingMode.BINARY_TO_DECIMAL, str);
+    }
+
+    private static String hexaToDecimal(String str) {
+        return convert(ProcessingMode.HEXA_TO_DECIMAL, str);
+    }
+
+    private static String decimalToHexa(String str) {
+        return convert(ProcessingMode.DECIMAL_TO_HEXA, str);
+    }
+
+    private static String binaryToHexa(String str) {
+        return convert(ProcessingMode.BINARY_TO_HEXA, str);
+    }
+
+    private static String hexaToBinary(String str) {
+        return convert(ProcessingMode.HEXA_TO_BINARY, str);
+    }
+
+    private static String convert(ProcessingMode processingMode, String str) {
+        return BaseConversion.newConverter(processingMode).convert(str);
     }
 }
