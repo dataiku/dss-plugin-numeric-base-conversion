@@ -1,6 +1,7 @@
 package com.dataiku.dip.plugins.baseconversion;
 
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,13 +18,12 @@ import com.dataiku.dip.shaker.server.ProcessorDesc;
 import com.dataiku.dip.shaker.text.Labelled;
 import com.dataiku.dip.util.ParamDesc;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 
 public class BaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
 
-    private static Pattern HEXADECIMAL_RE = Pattern.compile("(0[xX])?([0-9a-fA-F]+)[hH]?");
+    private static Pattern HEXADECIMAL_RE = Pattern.compile("(?:0[xX])?([0-9a-fA-F]+)[hH]?");
     private static Pattern BINARY_RE = Pattern.compile("([0-1]+)[bB]?");
     private static Pattern DECIMAL_RE = Pattern.compile("^([0-9]+)$");
 
@@ -180,91 +180,64 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
     }
 
     @VisibleForTesting
-    interface Converter {
-        String convert(String toConvert);
-    }
+    static abstract class Converter {
 
-    private static class BinaryToDecimal implements Converter {
-        @Override
-        public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
+        abstract String convert(String toConvert);
 
-            Matcher matcher = BINARY_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(1), 2);
-                return input.toString(10);
+        String convert(String str, int sourceBase, Pattern sourceBaseRegexp, int destinationBase) {
+            if (str == null) {
+                throw new NullPointerException("str cannot be null");
             }
-            return "";
+
+            Matcher matcher = sourceBaseRegexp.matcher(str);
+            if (!matcher.matches()) {
+                return "";
+            }
+            BigInteger input = new BigInteger(matcher.group(1), sourceBase);
+            return input.toString(destinationBase).toUpperCase(Locale.ROOT);
         }
     }
 
-    private static class HexaToDecimal implements Converter {
+    private static class BinaryToDecimal extends Converter {
         @Override
         public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
-
-            Matcher matcher = HEXADECIMAL_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(2), 16);
-                return input.toString(10);
-            }
-            return "";
+            return convert(str, 2, BINARY_RE, 10);
         }
     }
 
-    private static class DecimalToBinary implements Converter {
+    private static class HexaToDecimal extends Converter {
         @Override
         public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
-
-            Matcher matcher = DECIMAL_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(1), 10);
-                return input.toString(2);
-            }
-            return "";
+            return convert(str, 16, HEXADECIMAL_RE, 10);
         }
     }
 
-    private static class DecimalToHexa implements Converter {
+    private static class DecimalToBinary extends Converter {
         @Override
         public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
-
-            Matcher matcher = DECIMAL_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(1), 10);
-                return input.toString(16).toUpperCase();
-            }
-            return "";
+            return convert(str, 10, DECIMAL_RE, 2);
         }
     }
 
-    private static class HexaToBinary implements Converter {
+    private static class DecimalToHexa extends Converter {
         @Override
         public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
-
-            Matcher matcher = HEXADECIMAL_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(2), 16);
-                return input.toString(2);
-            }
-            return "";
+            return convert(str, 10, DECIMAL_RE, 16);
         }
     }
 
-    private static class BinaryToHexa implements Converter {
+    private static class HexaToBinary extends Converter {
         @Override
         public String convert(String str) {
-            Preconditions.checkNotNull(str, "str cannot be null");
-
-            Matcher matcher = BINARY_RE.matcher(str);
-            if (matcher.matches()) {
-                BigInteger input = new BigInteger(matcher.group(1), 2);
-                return input.toString(16).toUpperCase();
-            }
-            return "";
+            return convert(str, 16, HEXADECIMAL_RE, 2);
         }
     }
+
+    private static class BinaryToHexa extends Converter {
+        @Override
+        public String convert(String str) {
+            return convert(str, 2, BINARY_RE, 16);
+        }
+    }
+
 }
