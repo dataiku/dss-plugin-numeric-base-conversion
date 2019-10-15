@@ -5,12 +5,12 @@
     var ShakerProcessorsInfo = injector.get("ShakerProcessorsInfo");
 
     var conversionModes = {
-        "BINARYTODECIMAL": "binary to decimal",
-        "HEXADECIMALTODECIMAL": "hexa to decimal",
-        "DECIMALTOBINARY": "decimal to binary",
-        "DECIMALTOHEXADECIMAL": "decimal to hexa",
-        "HEXADECIMALTOBINARY": "hexa to binary",
-        "BINARYTOHEXADECIMAL": "binary to hexa"
+        "BINARY_TO_DECIMAL": "binary to decimal",
+        "HEXA_TO_DECIMAL": "hexa to decimal",
+        "DECIMAL_TO_BINARY": "decimal to binary",
+        "DECIMAL_TO_HEXA": "decimal to hexa",
+        "HEXA_TO_BINARY": "hexa to binary",
+        "BINARY_TO_HEXA": "binary to hexa"
     }
 
     var getDescription = function(params) {
