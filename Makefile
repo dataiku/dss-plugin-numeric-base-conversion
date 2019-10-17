@@ -1,5 +1,5 @@
 PLUGIN_VERSION=1.0.0
-PLUGIN_ID=base-conversion
+PLUGIN_ID=numeric-base-conversion
 
 all:
 	cat plugin.json|json_pp > /dev/null
