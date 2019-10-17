@@ -1,4 +1,4 @@
-# dss-plugin-base-conversion
+# dss-plugin-numeric-base-conversion
 A processor to convert numerical values between hexadecimal, binary and decimal bases
 
 ## How to use
