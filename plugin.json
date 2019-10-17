@@ -1,21 +1,21 @@
 {
-    "id": "base-conversion",
+    "id": "numeric-base-conversion",
     "version": "1.0.0",
     "meta": {
-        "label": "Base conversion",
-        "description": "Convert numbers from/to binary and hexadecimal formats.",
+        "label": "Numeric base (radix) conversion",
+        "description": "Convert numbers from/to binary, decimal and hexadecimal formats.",
         "author": "Dataiku (Alex Bourret)",
         "icon": "icon-superscript",
         "licenseInfo": "Apache Software License",
-        "url": "https://www.dataiku.com/dss/plugins/info/base-conversion.html",
+        "url": "https://www.dataiku.com/dss/plugins/info/numeric-base-conversion.html",
         "tags": ["Data Preparation"]
     },
     "javaPreparationProcessors": [
         {
             "id": "baseconversion",
             "meta": {
-                "label": "Base conversion",
-                "description": "This processor converts numbers to / from binary / hexadecimal",
+                "label": "Numeric base (radix) conversion",
+                "description": "This processor converts numbers between binary, decimal and hexadecimal bases.",
                 "icon": "icon-superscript"
             }
         }
