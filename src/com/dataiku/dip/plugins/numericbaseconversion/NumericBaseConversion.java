@@ -1,4 +1,4 @@
-package com.dataiku.dip.plugins.baseconversion;
+package com.dataiku.dip.plugins.numericbaseconversion;
 
 import java.math.BigInteger;
 import java.util.Locale;
@@ -21,7 +21,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 
 
-public class BaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
+public class NumericBaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
 
     private static Pattern HEXADECIMAL_RE = Pattern.compile("(?:0[xX])?([0-9a-fA-F]+)[hH]?");
     private static Pattern BINARY_RE = Pattern.compile("([0-1]+)[bB]?");
@@ -36,7 +36,7 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         @Override
         public void validate() throws IllegalArgumentException {
             // Throw an exception if the processingMode is invalid.
-            BaseConversion.newConverter(processingMode);
+            NumericBaseConversion.newConverter(processingMode);
         }
     }
 
@@ -73,16 +73,16 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         }
     }
 
-    public static final ProcessorMeta<BaseConversion, Parameter> META = new ProcessorMeta<BaseConversion, Parameter>() {
+    public static final ProcessorMeta<NumericBaseConversion, Parameter> META = new ProcessorMeta<NumericBaseConversion, Parameter>() {
 
         @Override
         public String getName() {
-            return "BaseConversion";
+            return "NumericBaseConversion";
         }
 
         @Override
         public String getDocPage() {
-            return "base-conversion";
+            return "numeric-base-conversion";
         }
 
         @Override
@@ -124,12 +124,12 @@ public class BaseConversion extends SingleInputSingleOutputRowProcessor implemen
         }
 
         @Override
-        public BaseConversion build(BaseConversion.Parameter parameter) throws Exception {
-            return new BaseConversion(parameter);
+        public NumericBaseConversion build(NumericBaseConversion.Parameter parameter) throws Exception {
+            return new NumericBaseConversion(parameter);
         }
     };
 
-    public BaseConversion(Parameter params) {
+    public NumericBaseConversion(Parameter params) {
         this.params = params;
     }
 

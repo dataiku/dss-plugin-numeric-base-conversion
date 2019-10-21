@@ -20,5 +20,5 @@
             }
         }
     ],
-    "entryPoint": "com.dataiku.dip.plugins.baseconversion.Plugin"
+    "entryPoint": "com.dataiku.dip.plugins.numericbaseconversion.Plugin"
 }

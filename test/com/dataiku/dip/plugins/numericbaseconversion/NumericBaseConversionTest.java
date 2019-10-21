@@ -1,13 +1,13 @@
-package com.dataiku.dip.plugins.baseconversion;
+package com.dataiku.dip.plugins.numericbaseconversion;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.dataiku.dip.plugins.baseconversion.BaseConversion.ProcessingMode;
+import com.dataiku.dip.plugins.numericbaseconversion.NumericBaseConversion.ProcessingMode;
 
 
-public class BaseConversionTest {
+public class NumericBaseConversionTest {
     @Test
     public void testHexadecimalToDecimal() {
         assertEquals(hexaToDecimal(""), "");
@@ -160,6 +160,6 @@ public class BaseConversionTest {
     }
 
     private static String convert(ProcessingMode processingMode, String str) {
-        return BaseConversion.newConverter(processingMode).convert(str);
+        return NumericBaseConversion.newConverter(processingMode).convert(str);
     }
 }
