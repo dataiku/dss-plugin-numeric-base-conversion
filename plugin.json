@@ -7,6 +7,7 @@
         "author": "Dataiku (Alex Bourret)",
         "icon": "icon-superscript",
         "licenseInfo": "Apache Software License",
+        "supportLevel": "NOT_SUPPORTED",
         "url": "https://www.dataiku.com/dss/plugins/info/numeric-base-conversion.html",
         "tags": ["Data Preparation"]
     },
