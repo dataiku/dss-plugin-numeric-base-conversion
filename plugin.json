@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "meta": {
         "label": "Numeric base (radix) conversion",
-        "description": "Convert numbers from/to binary, decimal and hexadecimal formats.",
+        "description": "Convert numbers between decimal, binary and hexadecimal formats.",
         "author": "Dataiku (Alex Bourret)",
         "icon": "icon-superscript",
         "licenseInfo": "Apache Software License",
@@ -14,7 +14,7 @@
         {
             "id": "baseconversion",
             "meta": {
-                "label": "Numeric base (radix) conversion",
+                "label": "Base conversion",
                 "description": "This processor converts numbers between binary, decimal and hexadecimal bases.",
                 "icon": "icon-superscript"
             }

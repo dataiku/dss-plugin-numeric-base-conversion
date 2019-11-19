@@ -19,6 +19,7 @@ import com.dataiku.dip.shaker.text.Labelled;
 import com.dataiku.dip.util.ParamDesc;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 
 
 public class NumericBaseConversion extends SingleInputSingleOutputRowProcessor implements Processor {
@@ -120,7 +121,7 @@ public class NumericBaseConversion extends SingleInputSingleOutputRowProcessor i
             return ProcessorDesc.withGenericForm(this.getName(), actionVerb("Convert") + " binary hexa to from decimal")
                     .withMNEColParam("inputColumn", "Input column")
                     .withParam(ParamDesc.advancedSelect("processingMode", "Conversion", "", ProcessingMode.class).withDefaultValue(ProcessingMode.BINARY_TO_DECIMAL))
-                    .withMNESParam("outputColumn", "Output column");
+                    .withColParam("outputColumn", "Output column");
         }
 
         @Override
@@ -162,7 +163,11 @@ public class NumericBaseConversion extends SingleInputSingleOutputRowProcessor i
     @Override
     public void init() throws Exception {
         cd = getCf().column(params.inputColumn, ProcessorRole.INPUT_COLUMN);
-        outputColumn = getCf().column(params.outputColumn, ProcessorRole.OUTPUT_COLUMN);
+        if (!StringUtils.isBlank(params.outputColumn)) {
+            outputColumn = getCf().column(params.outputColumn, ProcessorRole.OUTPUT_COLUMN);
+        } else {
+            outputColumn = cd;
+        }
         selectedConverter = newConverter(params.processingMode);
     }
 

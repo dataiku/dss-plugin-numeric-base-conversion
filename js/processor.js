@@ -24,7 +24,7 @@
 
     ShakerProcessorsInfo.map["NumericBaseConversion"] = {
         "description": function(type, params) {
-            if (!params["inputColumn"] || !params["outputColumn"] || params["inputColumn"].length == 0 || params["outputColumn"].length == 0) return null;
+            if (!params["inputColumn"] || params["inputColumn"].length == 0) return null;
             return "Convert data in column <strong>{0}</strong>".format(sanitize(params["inputColumn"])) + getDescription(params);
         },
         "icon": "icon-superscript"
